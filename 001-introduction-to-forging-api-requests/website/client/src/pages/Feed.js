@@ -13,14 +13,20 @@ const Feed = () => {
         setRequestInProgress(true)
         
         if (isMoreData) {
-            getFeed(currentPage).then((data) => {
-                setPosts(p => p.concat(data.posts))
-                if (data.posts.length === 0) {
-                    setIsMoreData(false)
-                }
-            }).finally(() => {
-                setRequestInProgress(false)
-            });
+        console.log("IS MORE DATA");
+        console.log(isMoreData)
+
+           getFeed(currentPage).then((data) => {
+               const newPosts = data?.posts || [];  // <-- SAFE fallback
+               setPosts(p => p.concat(newPosts));
+               if (newPosts.length === 0) {
+                   setIsMoreData(false);
+               }
+           }).catch((err) => {
+               console.error('Error fetching feed:', err);
+           }).finally(() => {
+               setRequestInProgress(false);
+           });
         }
 
         const handleScroll = () => {

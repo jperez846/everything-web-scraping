@@ -19,8 +19,10 @@ const Discover = () => {
         
         if (isMoreData) {
             getProfiles(currentPage).then((data) => {
-                setProfiles(p => p.concat(data.profiles))
-                if (data.profiles.length === 0) {
+            const newProfiles = data?.profiles || []; //Safe fallback
+            console.log("Needed a safe fallback for the new emails")
+                setProfiles(p => p.concat(newProfiles))
+                if (newProfiles.length === 0) {
                     setIsMoreData(false)
                 }
             }).finally(() => {

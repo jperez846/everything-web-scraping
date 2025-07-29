@@ -43,3 +43,24 @@ services:
     ports:
       - "8080:8080"
     container_name: lesson-001-server
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+  python-scripts:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: python-scripts
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: tail -f /dev/null

@@ -7,6 +7,8 @@ import json
 def test_extract_feed(posts):
     images = []
     for post in posts:
+        #print("POST")
+        #print(post)
         images.append(post["image_url"]) # Image urls are unique
 
     feed = extract_feed()
@@ -30,7 +32,13 @@ def test_extract_emails(profiles):
         emails.append(profile["email"]) # Image urls are unique
 
     feed = extract_emails()
+#     print("EXTRACT EMAILS RESULT")
+#     print(feed)
+#     print("EMAILS LIST")
+#     print(emails)
     for email in feed:
+#         print("EMAIL TEST")
+#         print(email)
         if email not in emails:
             print(f"extract_emails(): ❌\n\tReturned an email that was not in the database (or returned multiple instances of a single email)")
             return False

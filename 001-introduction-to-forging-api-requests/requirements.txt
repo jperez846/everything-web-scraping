@@ -1,0 +1,2 @@
+requests
+# Add more Python packages here if needed later

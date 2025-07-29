@@ -1,10 +1,18 @@
 const isCodespaces = process.env.REACT_APP_CODESPACE_NAME != "" && process.env.REACT_APP_GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN != "";
 
-const BACKEND_URL = isCodespaces
+let BACKEND_URL = isCodespaces
     ? `https://${process.env.REACT_APP_CODESPACE_NAME}-${process.env.REACT_APP_BACKEND_PORT}.${process.env.REACT_APP_GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
-    : `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}`;
+    : `http://${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}`;
+//    BACKEND_URL=`http://localhost:8080`
+//let envVars = `http:${process.env.REACT_APP_BACKEND_HOST}:${process.env.REACT_APP_BACKEND_PORT}`;
+//console.log("ENV VARS");
+//console.log(envVars);
+
+console.log("BACKEND URL update02:");
+console.log(BACKEND_URL);
 
 export async function getFeed(page) {
+console.log("TRYING TO FETCH FEED")
     try{
         const response = await fetch(`${BACKEND_URL}/feed/${page}`); 
         return response.json();

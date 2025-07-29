@@ -13,7 +13,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.send("Test")
+    res.send("Test in action x2")
 })
 
 app.get('/discover/profiles/:page', async (req, res) => {
