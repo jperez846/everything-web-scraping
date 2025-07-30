@@ -1,12 +1,21 @@
 import requests
+from bs4 import BeautifulSoup
+
 
 # Note: the tester relies on this variable, update it if you are running the server on a different port
-WEBSITE_BASE_URL = "http://localhost:3000"
+WEBSITE_BASE_URL = "http://website:3000/"
+
 
 # Activity 1: Product Titles & Prices
 # Return a list of the product titles and prices
 #  Ex: ["Sacha the Deer ($3.13)", ...]
 def title_and_prices():
+    r = requests.get(WEBSITE_BASE_URL)
+    #print(r.text) # print out the HTML
+
+    soup = BeautifulSoup(r.text, "html.parser") # parse the HTML
+    print(soup)
+
     return ["Sacha the Deer ($3.13)"]
 
 # Activity 2: Get All Colors Available For Each Product
@@ -43,4 +52,5 @@ def product_reviews():
 if __name__ == "__main__":
     # Optional: You can call your methods here if you want to test them without running the tester
     # print(title_and_prices())
+    title_and_prices()
     pass

@@ -1,8 +1,16 @@
-version: '3.9'
-
 services:
   website:
     build:
       context: ./website
     ports:
-      - 3000:3000
+      - "3000:3000"
+
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile.scraper
+    container_name: scraper
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: tail -f /dev/null
