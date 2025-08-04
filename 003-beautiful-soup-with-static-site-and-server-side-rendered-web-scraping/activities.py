@@ -14,21 +14,128 @@ def title_and_prices():
     #print(r.text) # print out the HTML
 
     soup = BeautifulSoup(r.text, "html.parser") # parse the HTML
-    print(soup)
 
-    return ["Sacha the Deer ($3.13)"]
+    #product_detail = soup.find("div", {"class": "product-details"}) # you can select by any attribute with this syntax
+
+    #print(product_detail)
+    #print(soup)
+    totalElements = []
+    for element in soup.find_all("div", {"class": "product-details"}):
+        paragraphChildren = element.find_all('p')
+        h4Children = element.find_all('h4')
+
+        #print(children)
+        #print(h4Children[0].text)
+        title = h4Children[0].text
+        price = paragraphChildren[1].text
+        #print(f"title: {title}")
+        #print(f"price: {price}")
+        totalElements.append(f"{title} ({price})")
+
+    print(totalElements)
+
+
+    return totalElements
 
 # Activity 2: Get All Colors Available For Each Product
 # Return each product's title and color options as a list of strings
 #  Ex: ["Sacha the Deer (#000000, #39589e, #9c5145, #dfd3c2)", ...]
 def product_colors():
-    return ["Sacha the Deer (#000000, #39589e, #9c5145, #dfd3c2)"]
+    r = requests.get(WEBSITE_BASE_URL)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    title = None
+    totalColors = []
+    totalItems = []
+
+    for product_list in soup.find_all("ul", {"class": "product-list"}):
+       product_items = product_list.find_all("li")
+#        if not product_items:
+#             continue
+#        print(product_items)
+       for item in product_items:
+            #print(item)
+            product_details = item.find("div", {"class":"product-details"})
+            if not product_details:
+                #print("Found empty ")
+                continue
+                #print(product_details)
+            header = product_details.find('h4').text
+            #print(header)
+            styles = item.find("div", {"class":"styles"})
+            #colors = styles.find("div", {"class":"style-picker"})
+            if not styles:
+                continue
+            #print(styles)
+            colors = styles.find("div", {"class":"style-picker"})
+            color_divs = colors.find_all("div", {"data-item-id": True})
+            #print(colors)
+            #print("--------------")
+            for div in color_divs:
+                #print(div)
+                style_attr = div.get('style', '')
+                #print(style_attr)
+                if 'background-color' in style_attr:
+                    color = style_attr.split(':')[1].strip()
+
+                    #print(color)
+                    totalColors.append(color)
+            #print("--------------")
+            #print(header)
+            #print(totalColors)
+            commaSeparatedString = ', '.join(totalColors)
+            totalItems.append(f"{header} ({commaSeparatedString})")
+            totalColors = []
+            commaSeparatedString = ''
+    print(totalItems)
+    return totalItems
 
 # Activity 3: Get All Product's Material
 # Return each product's title and material as a list of strings
 #  Ex: ["Bumble the Elephant made of 70% Cotton, 30% Nylon", ...]
 def product_materials():
-    return ["Bumble the Elephant made of 70% Cotton, 30% Nylon"]
+    r = requests.get(WEBSITE_BASE_URL)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    endpoints = []
+    fullDetails = []
+    for unorderedListItem in soup.find_all('ul', {"class": "product-list"}):
+        #print(item)
+#          listItems = item.find_all('li')
+         #print(unorderedListItem)
+         for listItem in unorderedListItem.find_all("li"):
+            styles = listItem.find("div", {"class": "styles"})
+            if not styles:
+                continue
+            style = styles.find("div", {"class": "style"})
+            #print(style)
+            if not style:
+                continue
+            aTag = style.find("a", href=True)
+            #print(aTag['href'])
+            if not aTag:
+                continue
+            endpoints.append(aTag['href'])
+
+
+
+         print(endpoints)
+         for endpoint in endpoints:
+            #print("http://website:3000" + endpoint)
+            response = requests.get("http://website:3000" + endpoint)
+            #print(html)
+            html = BeautifulSoup(response.text, 'html.parser')
+            for div in html.find_all("div", {"class": "product-details"}):
+#                 print(div)
+                header = div.find("h3")
+                material = div.find("p", {"id": "material"})
+                print(f"header: {header.text}, material: {material.text}")
+                fullDetails.append(f"{header.text} made of {material.text}")
+
+
+
+    print(fullDetails)
+
+
+    return fullDetails
 
 # Activity 4: Filter all the products from highest reviewed to lowest reviewed
 # Return a list of the product titles and average rating as a touple
@@ -52,5 +159,7 @@ def product_reviews():
 if __name__ == "__main__":
     # Optional: You can call your methods here if you want to test them without running the tester
     # print(title_and_prices())
-    title_and_prices()
+    #title_and_prices()
+    #product_colors()
+    product_materials()
     pass
