@@ -141,25 +141,157 @@ def product_materials():
 # Return a list of the product titles and average rating as a touple
 #   Ex: [('Scar the Lion', 5), ...]
 def highest_reviewed():
-    return [("Scar the Lion", 5), ("Sacha the Deer", 5)]
+    r = requests.get(WEBSITE_BASE_URL)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    endpoints = []
+    fullDetails = []
+    for unorderedListItem in soup.find_all('ul', {"class": "product-list"}):
+            #print(item)
+    #          listItems = item.find_all('li')
+             #print(unorderedListItem)
+         for listItem in unorderedListItem.find_all("li"):
+            styles = listItem.find("div", {"class": "styles"})
+            if not styles:
+                continue
+            style = styles.find("div", {"class": "style"})
+            #print(style)
+            if not style:
+                continue
+            aTag = style.find("a", href=True)
+            #print(aTag['href'])
+            if not aTag:
+                continue
+            endpoints.append(aTag['href'])
+
+            #print(endpoints)
+    for endpoint in endpoints:
+        #print("http://website:3000" + endpoint)
+        response = requests.get("http://website:3000" + endpoint)
+        #print(html)
+        html = BeautifulSoup(response.text, 'html.parser')
+        for div in html.find_all("div", {"class": "product-details"}):
+#                 print(div)
+            header = div.find("h3")
+            print(header)
+            #starsList = div.find_all("div", {"class": "product-rating"})
+            productRating = div.find("div", {"class" : "product-rating"})
+            #print(productRating)
+            checked = productRating.find_all("span", {"class": "checked"})
+            print(len(checked))
+            fullDetails.append((header.text,len(checked)))
+                    #print(len(checked))
+#                     rating = productRating.find("div", {"class": "star-rating"})
+                    #print(len(rating.find_all("span", {"class": "checked"})))
+                    #print(len(span))
+
+#                     for star in starsList:
+#                         rating = star.find_all("span", {"class": "fa fa-star checked"})
+#                         #print(len(rating))
+# #                     stars = starsList.find_all("span", {"class": "fa fa-star checked"})
+# #                     print(starsList)
+#                         fullDetails.append((header.text, len(rating)))
+
+
+    sortedDetails = sorted(fullDetails, key=lambda x: x[1], reverse=True)
+
+    print(sortedDetails)
+    return sortedDetails
 
 # Activity 5: Product Availability
 # Not all products are available, look at `Gerald the Giraffe`
 # Return a list of strings of all products and their availability
 #  Ex: ["Sacha the Deer is available: True", ...]
 def product_availability():
-    return ["Sacha the Deer is available: True"]
+    r = requests.get(WEBSITE_BASE_URL)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    endpoints = []
+    fullDetails = []
+    for unorderedListItem in soup.find_all('ul', {"class": "product-list"}):
+                #print(item)
+        #          listItems = item.find_all('li')
+                 #print(unorderedListItem)
+         for listItem in unorderedListItem.find_all("li"):
+            styles = listItem.find("div", {"class": "styles"})
+            if not styles:
+                continue
+            style = styles.find("div", {"class": "style"})
+            #print(style)
+            if not style:
+                continue
+            aTag = style.find("a", href=True)
+            #print(aTag['href'])
+            if not aTag:
+                continue
+            endpoints.append(aTag['href'])
+
+                #print(endpoints)
+    for endpoint in endpoints:
+        #print("http://website:3000" + endpoint)
+        response = requests.get("http://website:3000" + endpoint)
+        #print(html)
+        html = BeautifulSoup(response.text, 'html.parser')
+        for div in html.find_all("div", {"class": "product-details"}):
+#                 print(div)
+            header = div.find("h3")
+            #print(header)
+            checkoutButton = div.find("div", {"class": "button"})
+            #print(checkoutButton.text)
+            if checkoutButton and "Add to cart" in checkoutButton.text:
+                print(f"Header: {header.text} {checkoutButton.text}")
+                fullDetails.append(f"{header.text} is available: True")
+            else:
+                fullDetails.append(f"{header.text} is available: False")
+                #starsList = div.find_all("div", {"class": "product-rating"})
+    print(fullDetails)
+    return fullDetails
 
 # Activity 6: Scrape Reviews For Each Product
 # Return a dictionary with structure {"product_title": [{"rating": "5", "review_title": "Great!", "review_full": "I love it"}, ...], ...}
 # Ex: {"Sacha the Deer": [{'rating': '5', 'review_title': 'V neck', 'review_full': 'Great shirt. love the detail in back. feminine and different than the average t'}, ...]}
 def product_reviews():
-    return {"Sacha the Deer": [{'rating': '5', 'review_title': 'V neck', 'review_full': 'Great shirt. love the detail in back. feminine and different than the average t'}]}
+     r = requests.get(WEBSITE_BASE_URL)
+     soup = BeautifulSoup(r.text, 'html.parser')
+     endpoints = []
+     fullDetails = []
+     for unorderedListItem in soup.find_all('ul', {"class": "product-list"}):
+        for listItem in unorderedListItem.find_all("li"):
+            styles = listItem.find("div", {"class": "styles"})
+            if not styles:
+                continue
+            style = styles.find("div", {"class": "style"})
+            #print(style)
+            if not style:
+                continue
+            aTag = style.find("a", href=True)
+            #print(aTag['href'])
+            if not aTag:
+                continue
+            endpoints.append(aTag['href'])
+     for endpoint in endpoints:
+        response = requests.get("http://website:3000" + endpoint)
+        #print(html)
+        html = BeautifulSoup(response.text, 'html.parser')
+        for div in html.find_all("div", {"class": "product-details"}):
+            header = div.find("h3")
+            #print(header)
+            checkoutButton = div.find("div", {"class": "button"})
+            #print(checkoutButton.text)
+            if checkoutButton and "Add to cart" in checkoutButton.text:
+                print(f"Header: {header.text} {checkoutButton.text}")
+                fullDetails.append(f"{header.text} is available: True")
+            else:
+                fullDetails.append(f"{header.text} is available: False")
+                #starsList = div.find_all("div", {"class": "product-rating"})
+
+     return {"Sacha the Deer": [{'rating': '5', 'review_title': 'V neck', 'review_full': 'Great shirt. love the detail in back. feminine and different than the average t'}]}
 
 if __name__ == "__main__":
     # Optional: You can call your methods here if you want to test them without running the tester
     # print(title_and_prices())
     #title_and_prices()
     #product_colors()
-    product_materials()
+    #product_materials()
+    #highest_reviewed()
+    #product_availability()
+    product_reviews()
     pass
