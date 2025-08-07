@@ -252,7 +252,8 @@ def product_reviews():
      r = requests.get(WEBSITE_BASE_URL)
      soup = BeautifulSoup(r.text, 'html.parser')
      endpoints = []
-     fullDetails = []
+     fullDetails = {}
+
      for unorderedListItem in soup.find_all('ul', {"class": "product-list"}):
         for listItem in unorderedListItem.find_all("li"):
             styles = listItem.find("div", {"class": "styles"})
@@ -271,19 +272,35 @@ def product_reviews():
         response = requests.get("http://website:3000" + endpoint)
         #print(html)
         html = BeautifulSoup(response.text, 'html.parser')
-        for div in html.find_all("div", {"class": "product-details"}):
-            header = div.find("h3")
-            #print(header)
-            checkoutButton = div.find("div", {"class": "button"})
-            #print(checkoutButton.text)
-            if checkoutButton and "Add to cart" in checkoutButton.text:
-                print(f"Header: {header.text} {checkoutButton.text}")
-                fullDetails.append(f"{header.text} is available: True")
-            else:
-                fullDetails.append(f"{header.text} is available: False")
-                #starsList = div.find_all("div", {"class": "product-rating"})
+        details = html.find("div", {"class": "product-details"})
+        header = details.find("h3").text
+        print(details.find("h3").text)
+        ratingInfo = []
 
-     return {"Sacha the Deer": [{'rating': '5', 'review_title': 'V neck', 'review_full': 'Great shirt. love the detail in back. feminine and different than the average t'}]}
+        reviews = html.find("div", {"class": "product-reviews"})
+        productRatings = reviews.find("div", {"class": "product-ratings"})
+        ratingDetails = productRatings.find_all("div", {"class": "product-rating"})
+        for rating in ratingDetails:
+            #print(rating.find("div", {"class": "rating-title"}).text)
+            ratingTitle = rating.find("div", {"class": "rating-title"}).text
+            starRating = rating.find("div", {"class": "star-rating"})
+            ratingNumber = starRating.find("span", {"class": "rating-number"}).text
+            #print(ratingNumber)
+            ratingReview = rating.find("div", {"class": "rating-review"}).text
+            #print(ratingReview)
+            ratingInfo.append({
+            "rating": ratingNumber,
+            "review_title": ratingTitle,
+            "review_full": ratingReview
+            })
+            fullDetails[header] = ratingInfo
+
+
+     print(fullDetails)
+
+
+
+     return fullDetails
 
 if __name__ == "__main__":
     # Optional: You can call your methods here if you want to test them without running the tester
